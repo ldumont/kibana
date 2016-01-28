@@ -3,19 +3,24 @@ define([
   'config',
   'lodash',
   './termsTransformer',
-  './statsTransformer',
-  './histogramTransformer',
+  './queryTransformer',
+  './termStatsTransformer',
+  './statisticalTransformer',
+  './dateHistogramTransformer',
   './passthroughTransformer'
 ],
-function (angular, config, _, termsTransformer, statsTransformer, histogramTransformer, passthroughTransformer) {
+function (angular, config, _, termsTransformer, queryTransformer, termStatsTransformer, statisticalTransformer, dateHistogramTransformer, passthroughTransformer) {
 
   var module = angular.module('kibana.services');
 
   var transformers = [
     termsTransformer,
-    statsTransformer,
-    histogramTransformer,
-    // must be last
+    queryTransformer,
+    termStatsTransformer,
+    statisticalTransformer,
+    dateHistogramTransformer,
+    
+    // must be last in order to serve as fallthrough
     passthroughTransformer
   ];
 

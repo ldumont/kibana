@@ -7,20 +7,10 @@ function () {
     },
 
     request: function(config){
-      console.info({
-        interceptor: 'dummyTransformer',
-        outgoing: config
-      });
-
       return config;
     },
-    
-    response: function(response){
-      console.info({
-        interceptor: 'dummyTransformer',
-        incoming: response
-      });
 
+    response: function(response){
       return response;
     }
   }
