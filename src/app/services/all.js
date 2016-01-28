@@ -8,6 +8,6 @@ define([
   './timer',
   './panelMove',
   './esVersion',
-  './es2Interceptor'
+  './elasticsearch2/interceptor'
 ],
 function () {});
