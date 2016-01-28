@@ -33,7 +33,17 @@ function (Settings) {
      elasticsearch: "http://10.200.0.6:9200",
 //     elasticsearch: "http://192.168.10.38:9200",
 
-    // TODO: place flag for placing the es2 interceptor or not
+    /** @scratch /configuration/config.js/5
+     *
+     * ==== elasticsearch_version
+     *
+     * This specify the version of elastic search to work with:
+     *   1 - For working with elastic search 1.x - makes use of facets
+     *   2 - (default) For working with elastic search 2.x - makes use of aggregations
+     *
+     * elasticsearch_version: 2,
+     */
+    elasticsearch_version     : 2,
 
     /** @scratch /configuration/config.js/5
      *
