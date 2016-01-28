@@ -3,10 +3,12 @@ define([
   'lodash'
 ],
 function (angular,_) {
+  var signature = /^\{\"facets\":\{\"0\":\{\"date_histogram\":/;
+
   return {
     condition: function(config){
-      return false;
-      return config.url.endsWith('/_search') && /^\{\"facets\":\{\"terms\":/.test(config.data);
+      return false; // TODO:
+      return config.url.endsWith('/_search?search_type=count') && signature.test(config.data);
     },
 
     request: function(config){
