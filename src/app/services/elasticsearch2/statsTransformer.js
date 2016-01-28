@@ -5,6 +5,7 @@ define([
 function (angular,_) {
   return {
     condition: function(config){
+      return false;
       return config.url.endsWith('/_search') && /^\{\"facets\":\{\"terms\":/.test(config.data);
     },
 

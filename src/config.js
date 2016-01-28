@@ -31,6 +31,7 @@ function (Settings) {
      */
 //     elasticsearch: "http://"+window.location.hostname+":9200",
      elasticsearch: "http://10.200.0.6:9200",
+//     elasticsearch: "http://192.168.10.38:9200",
 
     // TODO: place flag for placing the es2 interceptor or not
 
