@@ -1,21 +1,23 @@
 define([
   'lodash'
 ],
-function (lodash) {
+function (_) {
   return {
     condition: function(config){
-      return true;
+      return config.url.endsWith('/_search') && /^\{\"facets\":\{\"terms\":/.test(config.data);
     },
+
     request: function(config){
-      console.log({
+      console.warn({
         interceptor: 'termsTransformer',
         outgoing: config
       });
 
       return config;
     },
+    
     response: function(response){
-      console.log({
+      console.warn({
         interceptor: 'termsTransformer',
         incoming: response
       });

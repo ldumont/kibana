@@ -5,16 +5,18 @@ function () {
     condition: function(config){
       return true;
     },
+
     request: function(config){
-      console.log({
+      console.info({
         interceptor: 'dummyTransformer',
         outgoing: config
       });
 
       return config;
     },
+    
     response: function(response){
-      console.log({
+      console.info({
         interceptor: 'dummyTransformer',
         incoming: response
       });
