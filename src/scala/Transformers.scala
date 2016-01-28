@@ -15,12 +15,12 @@ class FacteTranform {
     val fieldJSN = new JSONObject()
     terms.put("terms", fieldJSN)
     fieldJSN.put("field", field)
-    terms
     termsP.put("terms",terms)
     termsP
   }
 
   def isFacetsTerms(str : String) : Boolean= {
+    if (str == null || str.isEmpty) return false
     val asJSON = JSONValue.parseWithException(str).asInstanceOf[JSONObject]
     val facets = getAsJSON(asJSON,"facets")
     val terms = getAsJSON(facets,"terms")
@@ -117,39 +117,46 @@ class HistogramFacetTransformer{
 
 
   def is(str : String) : Boolean= {
+    if (str == null || str.isEmpty) return false
     val asJSON = JSONValue.parseWithException(str).asInstanceOf[JSONObject]
     val facets = getAsJSON(asJSON,"facets")
     val zero = getAsJSON(facets,"0")
     zero != null
   }
 
-  def build(filter: JSONObject, dataHistogram: JSONObject, size: Integer) = {
-    val result = new JSONObject()
+  def build(filter: JSONObject, dataHistogram: JSONObject, number: String) = {
+
     val fQuery = new JSONObject()
     val innerAggs = new JSONObject()
     val histogramZero = new JSONObject()
     val outer = new JSONObject()
-    val outerFquery = new JSONObject()
-    result.put("aggs",outerFquery)
-    outerFquery.put("fquery", fQuery)
+    //val outerFquery = new JSONObject()
+
+    //outerFquery.put("fquery_"+number, fQuery)
     fQuery.put("filter",filter)
     fQuery.put("aggs", outer)
-    outer.put("0",histogramZero)
+    outer.put(number,histogramZero)
     histogramZero.put("date_histogram", dataHistogram)
-    result.put("size",size)
-    result
+
+    fQuery
 
   }
 
   def transform(str : String) : String = {
+    val result = new JSONObject()
+    val aggs = new JSONObject()
+    result.put("aggs",aggs)
     val asJSON = JSONValue.parseWithException(str).asInstanceOf[JSONObject]
-    val size = asJSON.get("size").asInstanceOf[Int]
+    result.put("size",asJSON.get("size"))
     val facets = getAsJSON(asJSON,"facets")
-    val zero = getAsJSON(facets,"0")
-    val dataHistogram  = getAsJSON( zero, "date_histogram")
-    val facetFilter = getAsJSON(zero,"facet_filter")
-    val fQuery= getAsJSON(facetFilter,"fquery")
-    build(fQuery, dataHistogram, size).toString()
+    facets.keySet().foreach(number => {
+      val zero = getAsJSON(facets,number)
+      val dataHistogram  = getAsJSON( zero, "date_histogram")
+      val facetFilter = getAsJSON(zero,"facet_filter")
+      val fQuery= getAsJSON(facetFilter,"fquery")
+      aggs.put("fquery_"+number, build(fQuery, dataHistogram, number))
+    })
+    result.toString()
   }
 
 
@@ -164,23 +171,32 @@ class HistogramFacetTransformer{
   def toResult(outout: String): JSONObject = {
     val aggregationFullResult = JSONValue.parseWithException(outout).asInstanceOf[JSONObject]
     val aggregations = getAsJSON(aggregationFullResult, "aggregations")
-    val fquery = getAsJSON(aggregations, "fquery")
-    val zero = getAsJSON(fquery, "0")
-    val buckets = getAsArray(zero, "buckets")
 
     val newFacets = new JSONObject()
-    val newZero = new JSONObject()
-    val entries = new JSONArray
-    newFacets.put("0", newZero)
-    newZero.put("_type","date_histogram")
-    newZero.put("entries",entries)
-    buckets.foreach( bucket => {
-      val entry = new JSONObject()
-      entry.put("time",bucket.asInstanceOf[JSONObject].get("key") )
-      entry.put("count",bucket.asInstanceOf[JSONObject].get("doc_count") )
-      entries.add(entry)
-    })
 
+
+
+    aggregations.keySet().foreach{ key =>
+      val newNumber = new JSONObject()
+      val entries = new JSONArray
+
+      val fquery = getAsJSON(aggregations, key)
+      //assuming there is only one !!!
+      val number = fquery.keySet().iterator().next()
+      val oldNumberValue = getAsJSON(fquery, number)
+      val buckets = getAsArray(oldNumberValue, "buckets")
+
+
+      newNumber.put("_type","date_histogram")
+      newNumber.put("entries",entries)
+      buckets.foreach( bucket => {
+        val entry = new JSONObject()
+        entry.put("time",bucket.asInstanceOf[JSONObject].get("key") )
+        entry.put("count",bucket.asInstanceOf[JSONObject].get("doc_count") )
+        entries.add(entry)
+      })
+      newFacets.put(number, newNumber)
+    }
     aggregationFullResult.put("facets",newFacets)
 
     aggregationFullResult
@@ -206,11 +222,27 @@ object TestHistogramFacetTransformer extends App{
 
   val f = new HistogramFacetTransformer
 
-  val input = "{\n  \"facets\": {\n    \"0\": {\n      \"date_histogram\": {\n        \"field\": \"@timestamp\",\n        \"interval\": \"100s\"\n      },\n      \"global\": true,\n      \"facet_filter\": {\n        \"fquery\": {\n          \"query\": {\n            \"filtered\": {\n              \"query\": {\n                \"query_string\": {\n                  \"query\": \"*\"\n                }\n              },\n              \"filter\": {\n                \"bool\": {\n                  \"must\": [\n                    {\n                      \"range\": {\n                        \"@timestamp\": {\n                          \"from\": 1453360213393,\n                          \"to\": 1453361113393\n                        }\n                      }\n                    },\n                    {\n                      \"range\": {\n                        \"@timestamp\": {\n                          \"from\": 1453360329661,\n                          \"to\": 1453360555801\n                        }\n                      }\n                    }\n                  ]\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  },\n  \"size\": 0\n}"
+  val input = "{\"facets\":{\"0\":{\"date_histogram\":{\"field\":\"@timestamp\",\"interval\":\"10s\"},\"global\":true,\"facet_filter\":{\"fquery\":{\"query\":{\"filtered\":{\"query\":{\"query_string\":{\"query\":\"*\"}},\"filter\":{\"bool\":{\"must\":[{\"range\":{\"@timestamp\":{\"from\":1453974103164,\"to\":1453975003164}}}]}}}}}}}},\"size\":0}"
 
   println(f.transform(input))
 
-  val outout = "{\n  \"took\": 203,\n  \"timed_out\": false,\n  \"_shards\": {\n    \"total\": 416,\n    \"successful\": 416,\n    \"failed\": 0\n  },\n  \"hits\": {\n    \"total\": 3158137,\n    \"max_score\": 0,\n    \"hits\": [\n      \n    ]\n  },\n  \"aggregations\": {\n    \"fquery\": {\n      \"0\": {\n        \"buckets\": [\n          {\n            \"key_as_string\": \"2016-01-21T07:11:40.000Z\",\n            \"key\": 1453360300000,\n            \"doc_count\": 2\n          },\n          {\n            \"key_as_string\": \"2016-01-21T07:13:20.000Z\",\n            \"key\": 1453360400000,\n            \"doc_count\": 13\n          },\n          {\n            \"key_as_string\": \"2016-01-21T07:15:00.000Z\",\n            \"key\": 1453360500000,\n            \"doc_count\": 9\n          }\n        ]\n      },\n      \"doc_count\": 24\n    }\n  }\n}"
+  //val outout = "{\n  \"took\": 203,\n  \"timed_out\": false,\n  \"_shards\": {\n    \"total\": 416,\n    \"successful\": 416,\n    \"failed\": 0\n  },\n  \"hits\": {\n    \"total\": 3158137,\n    \"max_score\": 0,\n    \"hits\": [\n      \n    ]\n  },\n  \"aggregations\": {\n    \"fquery\": {\n      \"0\": {\n        \"buckets\": [\n          {\n            \"key_as_string\": \"2016-01-21T07:11:40.000Z\",\n            \"key\": 1453360300000,\n            \"doc_count\": 2\n          },\n          {\n            \"key_as_string\": \"2016-01-21T07:13:20.000Z\",\n            \"key\": 1453360400000,\n            \"doc_count\": 13\n          },\n          {\n            \"key_as_string\": \"2016-01-21T07:15:00.000Z\",\n            \"key\": 1453360500000,\n            \"doc_count\": 9\n          }\n        ]\n      },\n      \"doc_count\": 24\n    }\n  }\n}"
+  val outout = "{\n    \"took\": 28,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 104,\n        \"successful\": 104,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": 985652,\n        \"max_score\": 0,\n        \"hits\": []\n    },\n    \"aggregations\": {\n        \"fquery_0\": {\n            \"0\": {\n                \"buckets\": [\n                    {\n                        \"key_as_string\": \"2016-01-28T09:54:40.000Z\",\n                        \"key\": 1453974880000,\n                        \"doc_count\": 2\n                    },\n                    {\n                        \"key_as_string\": \"2016-01-28T09:55:20.000Z\",\n                        \"key\": 1453974920000,\n                        \"doc_count\": 1\n                    }\n                ]\n            },\n            \"doc_count\": 3\n        }\n    }\n}"
+
+  println(f.toResult(outout))
+
+}
+
+
+object TestHistogramFacetTransformer3 extends App{
+
+  val f = new HistogramFacetTransformer
+
+  val input = "{\"facets\":{\"0\":{\"date_histogram\":{\"field\":\"@timestamp\",\"interval\":\"10s\"},\"global\":true,\"facet_filter\":{\"fquery\":{\"query\":{\"filtered\":{\"query\":{\"query_string\":{\"query\":\"*\"}},\"filter\":{\"bool\":{\"must\":[{\"range\":{\"@timestamp\":{\"from\":1453973995625,\"to\":1453974895625}}}]}}}}}}},\"1\":{\"date_histogram\":{\"field\":\"@timestamp\",\"interval\":\"10s\"},\"global\":true,\"facet_filter\":{\"fquery\":{\"query\":{\"filtered\":{\"query\":{\"query_string\":{\"query\":\"@type:\\\"syslog\\\"\"}},\"filter\":{\"bool\":{\"must\":[{\"range\":{\"@timestamp\":{\"from\":1453973995625,\"to\":1453974895625}}}]}}}}}}},\"2\":{\"date_histogram\":{\"field\":\"@timestamp\",\"interval\":\"10s\"},\"global\":true,\"facet_filter\":{\"fquery\":{\"query\":{\"filtered\":{\"query\":{\"query_string\":{\"query\":\"@type:\\\"log4net\\\"\"}},\"filter\":{\"bool\":{\"must\":[{\"range\":{\"@timestamp\":{\"from\":1453973995625,\"to\":1453974895625}}}]}}}}}}},\"3\":{\"date_histogram\":{\"field\":\"@timestamp\",\"interval\":\"10s\"},\"global\":true,\"facet_filter\":{\"fquery\":{\"query\":{\"filtered\":{\"query\":{\"query_string\":{\"query\":\"@type:\\\"request\\\"\"}},\"filter\":{\"bool\":{\"must\":[{\"range\":{\"@timestamp\":{\"from\":1453973995625,\"to\":1453974895626}}}]}}}}}}}},\"size\":0}"
+
+  println(f.transform(input))
+
+  val outout = "{\n    \"took\": 103,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 104,\n        \"successful\": 104,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": 985652,\n        \"max_score\": 0,\n        \"hits\": []\n    },\n    \"aggregations\": {\n        \"fquery_0\": {\n            \"0\": {\n                \"buckets\": [\n                    {\n                        \"key_as_string\": \"2016-01-28T09:54:40.000Z\",\n                        \"key\": 1453974880000,\n                        \"doc_count\": 2\n                    }\n                ]\n            },\n            \"doc_count\": 2\n        },\n        \"fquery_1\": {\n            \"1\": {\n                \"buckets\": []\n            },\n            \"doc_count\": 0\n        },\n        \"fquery_2\": {\n            \"2\": {\n                \"buckets\": []\n            },\n            \"doc_count\": 0\n        },\n        \"fquery_3\": {\n            \"3\": {\n                \"buckets\": [\n                    {\n                        \"key_as_string\": \"2016-01-28T09:54:40.000Z\",\n                        \"key\": 1453974880000,\n                        \"doc_count\": 2\n                    }\n                ]\n            },\n            \"doc_count\": 2\n        }\n    }\n}"
 
   println(f.toResult(outout))
 
