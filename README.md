@@ -1,3 +1,9 @@
+# Kibana 3 with Elasticsearch 2
+This fork was created inorder to support working with elasticsearch2.
+Currently we support facets of "terms" and "histograms"
+The project was checked against elasticsearch 2.1.1
+
+
 # Kibana
 
 __NOTE__: You have reached the Kibana 3 repository.
