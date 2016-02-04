@@ -6,10 +6,9 @@ define([
   './queryTransformer',
   './termStatsTransformer',
   './statisticalTransformer',
-  './dateHistogramTransformer',
-  './passthroughTransformer'
+  './dateHistogramTransformer'
 ],
-function (angular, config, _, termsTransformer, queryTransformer, termStatsTransformer, statisticalTransformer, dateHistogramTransformer, passthroughTransformer) {
+function (angular, config, _, termsTransformer, queryTransformer, termStatsTransformer, statisticalTransformer, dateHistogramTransformer) {
 
   var module = angular.module('kibana.services');
 
@@ -19,28 +18,48 @@ function (angular, config, _, termsTransformer, queryTransformer, termStatsTrans
     termStatsTransformer,
     statisticalTransformer,
     dateHistogramTransformer,
-
-    // must be last in order to serve as fallthrough
-    passthroughTransformer
   ];
 
   module.config(function($httpProvider){
-    var requestedVersion = config.elasticsearch_version || 2;
+    var requestedVersion = config.elasticsearch_version || 'auto';
 
-    if (angular.isNumber(requestedVersion) && requestedVersion === 2) {
-      $httpProvider.interceptors.push(function($log) {
+    if (requestedVersion === 'auto' || requestedVersion === 2) {
+      $httpProvider.interceptors.push(function($log, $elasticsearch_version) {
         return {
-         'request': function(config) {
-           config.es2Transformer = transformers[_.findIndex(transformers, function(t) { return t.condition(config); })];
+          'request': function(config) {
+            return $elasticsearch_version.when(function (version) {
+              if (version === 2) {
+                config.es2Transformer = transformers[_.findIndex(transformers, function(t) { return t.condition(config); })];
 
-             return config.es2Transformer.request(config);
+                if (config.es2Transformer)
+                  return config.es2Transformer.request(config);
+              }
+
+              return config;
+            });
           },
 
           'response': function(response) {
-             return response.config.es2Transformer.response(response);
+            if (response.config.es2Transformer)
+              return response.config.es2Transformer.response(response);
+
+            return response;
           }
         };
       });
     }
-  })
+  });
+
+  var elasticsearch_version_detected = angular.isNumber(config.elasticsearch_version);
+  var elasticsearch_version_deferred;
+
+  module.factory('elasticsearch_version', function($q, $http) {
+    if (angular.isNumber(config.elasticsearch_version))
+      return $q.when(config.elasticsearch_version);
+
+    elasticsearch_version_deferred = $q.defer();
+    return elasticsearch_version_deferred.promise;
+  });
+
+
 });

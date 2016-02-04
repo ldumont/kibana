@@ -39,11 +39,12 @@ function (Settings) {
      *
      * This specify the version of elastic search to work with:
      *   1 - For working with elastic search 1.x - makes use of facets
-     *   2 - (default) For working with elastic search 2.x - makes use of aggregations
+     *   2 - For working with elastic search 2.x - makes use of aggregations
+     *   'auto' - (default) Perform addition request to elastic search in order to query for its version and use the proper API
      *
      * elasticsearch_version: 2,
      */
-    elasticsearch_version     : 2,
+    elasticsearch_version     : 'auto',
 
     /** @scratch /configuration/config.js/5
      *
