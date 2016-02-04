@@ -4,7 +4,7 @@ define([
 ],
 function (angular,_) {
   var signature = /^\{\"facets\":\{\"terms\":/;
-  
+
   return {
     condition: function(config){
       return config.url.endsWith('/_search') && signature.test(config.data);
@@ -20,7 +20,9 @@ function (angular,_) {
               aggs: {
                 terms: {
                   terms: {
-                    field: facetData.facets.terms.terms.field
+                    field: facetData.facets.terms.terms.field,
+                    size: facetData.facets.terms.terms.size,
+                    min_doc_count: 1
                   }
                 }
               }
