@@ -37,7 +37,7 @@ function (angular, _, config, moment) {
       var something;
       indices = _.uniq(_.map(indices,  encodeURIComponent));
 
-      something = ejs.client.get("/" + indices.join(",") + "/_aliases?ignore_missing=true",
+      something = ejs.client.get("/" + indices.join(",") + "/_aliases?ignore_unavailable=true&ignore_missing=true",
         undefined, undefined, function (data, p) {
           if (p === 404) {
             return [];
@@ -83,6 +83,10 @@ function (angular, _, config, moment) {
       if(_.contains(['hour','day','week','month','year'],interval)) {
         var range;
         start = moment(start).clone();
+        // In case indexes are created in local timezone viewpoint, e.g. rsyslog's
+        // omelasticsearch output module.
+        // This adjustment covers all timezones and should be harmless.
+        // end = moment(end).clone().add('hours',12);
         range = [];
         while (start.isBefore(end)) {
           range.push(start.clone());

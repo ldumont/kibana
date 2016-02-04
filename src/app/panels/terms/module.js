@@ -255,14 +255,10 @@ function (angular, app, _, $, kbn) {
     return {
       restrict: 'A',
       link: function(scope, elem) {
+        var plot;
 
         // Receive render events
         scope.$on('render',function(){
-          render_panel();
-        });
-
-        // Re-render if the window is resized
-        angular.element(window).bind('resize', function(){
           render_panel();
         });
 
@@ -292,12 +288,12 @@ function (angular, app, _, $, kbn) {
 
         // Function for rendering panel
         function render_panel() {
-          var plot, chartData;
+          var chartData;
 
           build_results();
 
           // IE doesn't work without this
-          elem.css({height:scope.row.height});
+          elem.css({height:scope.panel.height||scope.row.height});
 
           // Make a clone we can operate on.
           chartData = _.clone(scope.data);
@@ -396,7 +392,7 @@ function (angular, app, _, $, kbn) {
             $tooltip
               .html(
                 kbn.query_color_dot(item.series.color, 20) + ' ' +
-                item.series.label + " (" + value.toFixed(0)+")"
+                kbn.xmlEnt(item.series.label) + " (" + value.toFixed(0)+")"
               )
               .place_tt(pos.pageX, pos.pageY);
           } else {

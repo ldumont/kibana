@@ -23,6 +23,7 @@
   "use strict"; // jshint ;_;
 
 
+
   /* CSS TRANSITION SUPPORT (http://www.modernizr.com/)
    * ======================================================= */
 
@@ -1884,7 +1885,6 @@
 
   "use strict"; // jshint ;_;
 
-
  /* TYPEAHEAD PUBLIC CLASS DEFINITION
   * ================================= */
 
@@ -1907,10 +1907,14 @@
 
   , select: function () {
     // CHANGE (rashidkpc) If nothing is selected, use existing value
-      var val = this.$menu.find('.active').attr('data-value') || this.$element.val();
-      val = $('<div />').html(val).text()
+      if (!this.$menu.find('.active').attr('data-value')) {
+        this.hide
+        return;
+      }
+      var val = this.$menu.find('.active').attr('data-value')
+      //$('<div />').html(val)
       this.$element
-        .val(this.updater(val))
+        .val(val)
         .change()
       return this.hide()
     }
@@ -1970,7 +1974,7 @@
       }
 
       items = $.map(items,function(v,k){
-        return $('<div />').text(v).html()
+        return $('<div />').text(v)
       })
 
       return this.render(items.slice(0, this.options.items)).show()
@@ -1997,7 +2001,7 @@
 
   , highlighter: function (item) {
       var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
-      return item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+      return item.html().replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
         return match.length > 0 ? '<strong>' + match + '</strong>' : match
       })
     }
@@ -2006,7 +2010,7 @@
       var that = this
 
       items = $(items).map(function (i, item) {
-        i = $(that.options.item).attr('data-value', item)
+        i = $(that.options.item).attr('data-value', item.text())
         i.find('a').html(that.highlighter(item))
         return i[0]
       })

@@ -203,15 +203,10 @@ define([
           render_panel();
         });
 
-        // Re-render if the window is resized
-        angular.element(window).bind('resize', function(){
-          render_panel();
-        });
-
         // Function for rendering panel
         function render_panel() {
           // IE doesn't work without this
-          elem.css({height:scope.row.height});
+          elem.css({height:scope.panel.height||scope.row.height});
 
           try {
             _.each(scope.data,function(series) {
@@ -286,7 +281,7 @@ define([
             var value = scope.panel.chart === 'bar' ?
               item.datapoint[1] : item.datapoint[1][0][1];
             $tooltip
-              .html(kbn.query_color_dot(item.series.color, 20) + ' ' + item.series.label + " (" + value.toFixed(0) + ")")
+              .html(kbn.query_color_dot(item.series.color, 20) + ' ' + kbn.xmlEnt(item.series.label) + " (" + value.toFixed(0) + ")")
               .place_tt(pos.pageX, pos.pageY);
           } else {
             $tooltip.remove();
