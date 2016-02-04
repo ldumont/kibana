@@ -7,7 +7,7 @@ function (angular,_) {
 
   return {
     condition: function(config){
-      return config.url.endsWith('/_search?search_type=count') && signature.test(config.data);
+      return /\/_search\?search_type=count$/.test(config.url) && signature.test(config.data);
     },
 
     request: function(config){
