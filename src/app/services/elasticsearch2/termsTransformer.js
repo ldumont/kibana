@@ -18,11 +18,16 @@ function (angular,_) {
             fquery:{
               filter: facetData.facets.terms.facet_filter.fquery,
               aggs: {
-                terms: {
+                terms_result: {
                   terms: {
                     field: facetData.facets.terms.terms.field,
                     size: facetData.facets.terms.terms.size,
                     min_doc_count: 1
+                  }
+                },
+                terms_missing: {
+                  missing: {
+                    field: facetData.facets.terms.terms.field
                   }
                 }
               }
@@ -42,10 +47,10 @@ function (angular,_) {
       data.facets = {
         terms: {
           _type: 'terms',
-          missing: -1, // TODO: figure out where t get the info from
+          missing: data.aggregations.fquery.terms_missing.doc_count,
           total: data.aggregations.fquery.doc_count,
-          other: data.aggregations.fquery.terms.sum_other_doc_count,
-          terms: _.map(data.aggregations.fquery.terms.buckets, function(bucket){
+          other: data.aggregations.fquery.terms_result.sum_other_doc_count,
+          terms: _.map(data.aggregations.fquery.terms_result.buckets, function(bucket){
             return {
               term: bucket.key,
               count: bucket.doc_count
