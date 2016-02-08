@@ -3,6 +3,8 @@ This fork was created in order to support working with elasticsearch2.
 Currently we support facets of "terms", "histograms" and "stats"
 The project was checked against elasticsearch 2.1.1
 
+Since Kibana3 is deprecated, any contribution to this fork can simply be done using a pull request
+
 # Kibana
 
 __NOTE__: You have reached the Kibana 3 repository.
