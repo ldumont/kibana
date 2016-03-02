@@ -9,7 +9,7 @@ function (angular, _, config, kbn) {
 
   var module = angular.module('kibana.services');
 
-  module.service('querySrv', function(dashboard, ejsResource, filterSrv, esVersion, $q) {
+  module.service('querySrv', function($rootScope, dashboard, ejsResource, filterSrv, esVersion, $q) {
 
     // Save a reference to this
     var self = this;
@@ -158,6 +158,15 @@ function (angular, _, config, kbn) {
       if (dashboard.current.services.query.ids.length === 0) {
         self.set({});
       }
+    };
+
+    this.make_queries_from_terms = function(data) {
+        _.each(data.terms, function(term) {
+          var q = self.defaults({});
+          q.query = data.field +':'+term;
+          self.set(q);
+        });
+        self.resolve().then(function(){$rootScope.$broadcast('refresh');});
     };
 
     // This is used both for adding queries and modifying them. If an id is passed,

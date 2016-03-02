@@ -211,6 +211,19 @@ function (angular, app, _, $, kbn) {
         $scope.$emit('render');
       });
     };
+    
+    $scope.make_queries = function()
+    {
+       var data = {};
+       data.field = $scope.panel.field;
+       data.terms = [];
+       _.each($scope.data, function(item) {
+         if(item.label !== 'Missing field' && item.label !== 'Other values') {
+           data.terms.push(item.label);
+         }
+       });
+       querySrv.make_queries_from_terms(data);
+    };
 
     $scope.build_search = function(term,negate) {
       if(_.isUndefined(term.meta)) {
