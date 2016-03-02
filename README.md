@@ -5,6 +5,9 @@ The project was checked against elasticsearch 2.1.1
 
 Since Kibana3 is deprecated, any contribution to this fork can simply be done using a pull request
 
+This fork is based on minimal changes to the original kibana code, by injecting a layer of translation that handle the requests before they leave to the elasticsearch server.
+A different fork can be found at [https://github.com/immunochomik/kibana3]here that is based on changing the kibana 3 code to work with the new elasticsearch 2 sdk.
+
 # Kibana
 
 __NOTE__: You have reached the Kibana 3 repository.
