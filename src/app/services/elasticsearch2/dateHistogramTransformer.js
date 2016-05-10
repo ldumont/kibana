@@ -3,6 +3,8 @@ define([
   'lodash'
 ],
 function (angular,_) {
+  'use strict';
+
   var signature = /^\{\"facets\":\{\"0\":\{\"date_histogram\":/;
 
   return {
@@ -62,5 +64,5 @@ function (angular,_) {
 
       return response;
     }
-  }
+  };
 });
