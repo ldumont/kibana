@@ -8,7 +8,7 @@ define([
 
     return {
       condition: function (config) {
-        return /\/_search$/.test(config.url) && signature.test(config.data);
+        return (/\/_search$/).test(config.url) && signature.test(config.data);
       },
 
       request: function (config) {

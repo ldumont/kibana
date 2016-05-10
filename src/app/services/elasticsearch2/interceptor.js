@@ -24,7 +24,7 @@ define([
       var requestedVersion = config.elasticsearch_version || 2;
 
       if (angular.isNumber(requestedVersion) && requestedVersion === 2) {
-        $httpProvider.interceptors.push(function ($log) {
+        $httpProvider.interceptors.push(function () { // $log unused
           return {
             'request': function (config) {
               config.es2Transformer = transformers[_.findIndex(transformers, function (t) {
