@@ -1,8 +1,12 @@
 # Kibana 3 with Elasticsearch 2
-This fork was created inorder to support working with elasticsearch2.
-Currently we support facets of "terms" and "histograms"
+This fork was created in order to support working with elasticsearch2.
+Currently we support facets of "terms", "histograms" and "stats"
 The project was checked against elasticsearch 2.1.1
 
+Since Kibana3 is deprecated, any contribution to this fork can simply be done using a pull request
+
+This fork is based on minimal changes to the original kibana code, by injecting a layer of translation that handle the requests before they leave to the elasticsearch server.
+A different fork can be found at [https://github.com/immunochomik/kibana3](https://github.com/immunochomik/kibana3) that is based on changing the kibana 3 code to work with the new elasticsearch 2 sdk.
 
 # Kibana
 
@@ -29,7 +33,7 @@ access to it.
 
 ### Docs
 
-Documentation, panel options and tutorials can be found at 
+Documentation, panel options and tutorials can be found at
 [http://www.elasticsearch.org/guide/en/kibana/current/](http://www.elasticsearch.org/guide/en/kibana/current/)
 
 ### Installation
@@ -53,12 +57,12 @@ __Q__: How do I secure this? I don't want to leave 9200 open.
 __A__: A simple nginx virtual host and proxy configuration can be found in the sample/nginx.conf
 
 __Q__: How to run the grunt build process.  
-__A__: Steps to follow 
-        a)Install node & npm 
+__A__: Steps to follow
+        a)Install node & npm
         b)npm install -g grunt-cli
         c)npm install in kibana folder
         d)grunt build
-        
+
         Useful links:
         	https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
         	https://npmjs.org/doc/install.html
@@ -70,6 +74,6 @@ If you have questions or comments the best place to reach me is #logstash or #el
 
 ### Contributing
 
-Please see [CONTRIBUTING.md](https://github.com/elasticsearch/kibana/blob/master/CONTRIBUTING.md). 
-If you have a bugfix or new feature that you would like to contribute to Kibana, **please find or open an issue 
-about it first.** 
+Please see [CONTRIBUTING.md](https://github.com/elasticsearch/kibana/blob/master/CONTRIBUTING.md).
+If you have a bugfix or new feature that you would like to contribute to Kibana, **please find or open an issue
+about it first.**
