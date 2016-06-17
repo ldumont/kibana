@@ -3,7 +3,7 @@ define([
   'lodash'
 ],
 function (angular,_) {
-  var signature = /^\{\"facets\":\{\"0\":\{\"query\":.*\"old_.*/;
+  var signature = /^\{\"facets\":\{\"0\":\{\"query\":\{\"filtered\":\{\"query\"/;
 
   return {
     condition: function(config){
@@ -18,13 +18,13 @@ function (angular,_) {
 
       var fLen = Object.keys(facetData["facets"]).length;
 
-      for (i=0; i < fLen/2; i++) {
+      for (i=0; i < fLen; i++) {
         aggregationsData["aggs"][i] = {};
         aggregationsData["aggs"][i]["filter"] = facetData["facets"][i];
-
-        aggregationsData["aggs"]["old_" + i] = {};
-        aggregationsData["aggs"]["old_" + i]["filter"] = facetData["facets"]["old_" + i];
       };
+
+      aggregationsData.size = 0;
+
       config.data = angular.toJson(aggregationsData);
 
       return config;
@@ -33,16 +33,13 @@ function (angular,_) {
     response: function(response){
       var data = response.data;
 
+      var facetsData = {};
+
       data.facets = data.aggregations;
 
-      var fLen = Object.keys(data["facets"]).length;
-
-      for (i=0; i < fLen/2; i++) {
-        data["facets"][i]["count"] = data["facets"][i]["doc_count"];
-        data["facets"]["old_" + i]["count"] = data["facets"]["old_" + i]["doc_count"];
-
-        data["facets"][i]["type"] = "query";
-        data["facets"]["old_" + i]["type"] = "query";
+      for (b in data.facets) {
+        data["facets"][b]["count"] = data["facets"][b]["doc_count"];
+        data["facets"][b]["_type"] = "query";
       };
 
       return response;
