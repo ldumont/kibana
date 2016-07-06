@@ -7,10 +7,11 @@ define([
   './termsTransformer',
   './statisticalTransformer',
   './dateHistogramTransformer',
+  './histogramTransformer',
   './hitsTransformer',
   './passthroughTransformer'
 ],
-function (angular, config, _, trendsTransformer, topnTransformer, termsTransformer, statisticalTransformer, dateHistogramTransformer, hitsTransformer, passthroughTransformer) {
+function (angular, config, _, trendsTransformer, topnTransformer, termsTransformer, statisticalTransformer, dateHistogramTransformer, histogramTransformer, hitsTransformer, passthroughTransformer) {
 
   var module = angular.module('kibana.services');
 
@@ -20,6 +21,7 @@ function (angular, config, _, trendsTransformer, topnTransformer, termsTransform
     termsTransformer,
     statisticalTransformer,
     dateHistogramTransformer,
+    histogramTransformer,
     hitsTransformer,
 
     // must be last in order to serve as fallthrough
