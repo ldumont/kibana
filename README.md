@@ -12,7 +12,7 @@ A different fork can be found at [https://github.com/immunochomik/kibana3](https
 ####Installing on an Elasticsearch instance:
 
 ```bash
-./elasticsearch/bin/plugin install bloublou2014/kibana/3.0
+./elasticsearch/bin/plugin install  gigya/kibana/3.0
 open http://localhost:9200/_plugin/kibana
 ```
 

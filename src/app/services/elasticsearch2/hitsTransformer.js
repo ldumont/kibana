@@ -18,10 +18,10 @@ function (angular,_) {
 
       var fLen = Object.keys(facetData["facets"]).length;
 
-      for (i=0; i < fLen; i++) {
+      for (var i=0; i < fLen; i++) {
         aggregationsData["aggs"][i] = {};
         aggregationsData["aggs"][i]["filter"] = facetData["facets"][i];
-      };
+      }
 
       aggregationsData.size = 0;
 
@@ -37,10 +37,10 @@ function (angular,_) {
 
       data.facets = data.aggregations;
 
-      for (b in data.facets) {
+      for (var b in data.facets) {
         data["facets"][b]["count"] = data["facets"][b]["doc_count"];
         data["facets"][b]["_type"] = "query";
-      };
+      }
 
       return response;
     }

@@ -1,79 +1,64 @@
 define([
-  'angular',
-  'lodash'
-],
-function (angular,_) {
-  var signature = /^\{\"facets\":\{\"0\":\{\"date_histogram\":\{\"field\":\".*?\",\"interval\":\".*?\"\}/;
+		'angular',
+		'lodash'
+	],
+	function (angular, _) {
+		var signature = /^\{\"facets\":\{\"0\":\{\"date_histogram\":\{\"field\":\".*?\",\"interval\":\".*?\"\}/;
 
-  return {
-    condition: function(config){
-      return /\/_search\?search_type=count$/.test(config.url) && signature.test(config.data);
-    },
+		return {
+			condition: function (config) {
+				return /\/_search\?search_type=count$/.test(config.url) && signature.test(config.data);
+			},
 
-    request: function(config){
-      var facetData = angular.fromJson(config.data);
+			request: function (config) {
+				var facetData = angular.fromJson(config.data);
 
-      var aggregationsData = {
-        aggs:{},
-        size: facetData.size
-      };
+				var aggregationsData = {
+					aggs: {},
+					size: facetData.size
+				};
 
-      _.forOwn(facetData.facets, function(num, key){
-        var facet = facetData.facets[key];
-        var aggregations = {};
+				_.forOwn(facetData.facets, function (num, key) {
+					var facet = facetData.facets[key];
+					var aggregations = {};
 
-        aggregations[key] = {
-          date_histogram: facet.date_histogram
-        };
+					aggregations[key] = {
+						date_histogram: facet.date_histogram
+					};
 
-        var aggregationsData = {
-          aggs: {},
-          size: facetData.size
-        };
+					aggregationsData.aggs[key] = {
+						filter: facet.facet_filter.fquery,
+						aggs: aggregations
+					};
+				});
 
-        _.forOwn(facetData.facets, function (num, key) {
-          var facet = facetData.facets[key];
-          var aggregations = {};
+				config.data = angular.toJson(aggregationsData);
 
-          aggregations[key] = {
-            date_histogram: facet.date_histogram
-          };
+				return config;
+			},
 
-          aggregationsData.aggs[key] = {
-            filter: facet.facet_filter.fquery,
-            aggs: aggregations
-          };
-        });
+			response: function (response) {
+				var data = response.data;
 
-        config.data = angular.toJson(aggregationsData);
+				var facetsData = {};
 
-        return config;
-      },
+				_.forOwn(data.aggregations, function (num, key) {
+					var agregation = data.aggregations[key];
 
-      response: function (response) {
-        var data = response.data;
+					facetsData[key] = {
+						_type: 'date_histogram',
+						entries: _.map(agregation[key].buckets, function (bucket) {
+							return {
+								time: bucket.key,
+								count: bucket.doc_count
+							};
+						})
+					};
+				});
 
-        var facetsData = {};
+				data.facets = facetsData;
 
-        _.forOwn(data.aggregations, function (num, key) {
-          var agregation = data.aggregations[key];
-
-          var facet = {
-            _type: 'date_histogram',
-            entries: _.map(agregation[key].buckets, function (bucket) {
-              return {
-                time: bucket.key,
-                count: bucket.doc_count
-              };
-            })
-          };
-
-          facetsData[key] = facet;
-        });
-
-        data.facets = facetsData;
-
-        return response;
-      }
-    };
-  });
+				return response;
+			}
+		};
+	});
