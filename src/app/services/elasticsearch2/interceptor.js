@@ -1,24 +1,27 @@
 define([
-    'angular',
-    'config',
-    'lodash',
-    './termsTransformer',
-    './statisticalTransformer',
-    './dateHistogramTransformer',
-    './passthroughTransformer'
-  ],
-  function (angular, config, _, termsTransformer, statisticalTransformer, dateHistogramTransformer, passthroughTransformer) {
-    'use strict';
-    var module = angular.module('kibana.services');
+  'angular',
+  'config',
+  'lodash',
+  './trendsTransformer',
+  './topnTransformer',
+  './termsTransformer',
+  './statisticalTransformer',
+  './dateHistogramTransformer',
+  './histogramTransformer',
+  './hitsTransformer',
+  './passthroughTransformer'
+],
+function (angular, config, _, trendsTransformer, topnTransformer, termsTransformer, statisticalTransformer, dateHistogramTransformer, histogramTransformer, hitsTransformer, passthroughTransformer) {
 
     var transformers = [
+      topnTransformer,
+      trendsTransformer,
       termsTransformer,
       statisticalTransformer,
       dateHistogramTransformer,
-
-      // must be last in order to serve as fallthrough
-      passthroughTransformer
-    ];
+      histogramTransformer,
+      hitsTransformer,
+     ];
 
     module.config(function ($httpProvider) {
       var requestedVersion = config.elasticsearch_version || 2;

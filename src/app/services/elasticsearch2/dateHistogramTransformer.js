@@ -1,19 +1,30 @@
 define([
-    'angular',
-    'lodash'
-  ],
-  function (angular, _) {
-    'use strict';
+  'angular',
+  'lodash'
+],
+function (angular,_) {
+  var signature = /^\{\"facets\":\{\"0\":\{\"date_histogram\":\{\"field\":\".*?\",\"interval\":\".*?\"\}/;
 
-    var signature = /^\{\"facets\":\{\"0\":\{\"date_histogram\":/;
+  return {
+    condition: function(config){
+      return /\/_search\?search_type=count$/.test(config.url) && signature.test(config.data);
+    },
 
-    return {
-      condition: function (config) {
-        return (/\/_search\?search_type=count$/).test(config.url) && signature.test(config.data);
-      },
+    request: function(config){
+      var facetData = angular.fromJson(config.data);
 
-      request: function (config) {
-        var facetData = angular.fromJson(config.data);
+      var aggregationsData = {
+        aggs:{},
+        size: facetData.size
+      };
+
+      _.forOwn(facetData.facets, function(num, key){
+        var facet = facetData.facets[key];
+        var aggregations = {};
+
+        aggregations[key] = {
+          date_histogram: facet.date_histogram
+        };
 
         var aggregationsData = {
           aggs: {},
