@@ -3,11 +3,13 @@ define([
 		'lodash'
 	],
 	function (angular, _) {
+		'use strict';
+		
 		var signature = /^\{\"facets\":\{\"query\":\{\"terms\":\{\"field\"/;
 
 		return {
 			condition: function (config) {
-				return /\/_search$/.test(config.url) && signature.test(config.data);
+				return (/\/_search$/).test(config.url) && signature.test(config.data);
 			},
 
 			request: function (config) {
@@ -41,5 +43,5 @@ define([
 
 				return response;
 			}
-		}
+		};
 	});

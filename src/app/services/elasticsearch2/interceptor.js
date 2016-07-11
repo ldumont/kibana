@@ -12,8 +12,9 @@ define([
 		'./passthroughTransformer'
 	],
 	function (angular, config, _, trendsTransformer, topnTransformer, termsTransformer,
-	          statisticalTransformer, dateHistogramTransformer, histogramTransformer,
-	          hitsTransformer, passthroughTransformer) {
+            statisticalTransformer, dateHistogramTransformer, histogramTransformer,
+            hitsTransformer, passthroughTransformer) {
+		'use strict';
 
 		var transformers = [
 			topnTransformer,
@@ -27,7 +28,7 @@ define([
 		];
 
 		var module = angular.module('kibana.services');
-		
+
 		module.config(function ($httpProvider) {
 			var requestedVersion = config.elasticsearch_version || 2;
 

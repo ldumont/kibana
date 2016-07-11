@@ -1,13 +1,13 @@
 define([
-  'angular',
-  'lodash'
+  'angular'
 ],
-function (angular,_) {
+function (angular) {
+  'use strict';
   var signature = /^\{\"facets\":\{\"0\":\{\"query\":\{\"filtered\":\{\"query\"/;
 
   return {
     condition: function(config){
-      return /\/_search$/.test(config.url) && signature.test(config.data);
+      return (/\/_search$/).test(config.url) && signature.test(config.data);
     },
 
     request: function(config){
@@ -33,8 +33,6 @@ function (angular,_) {
     response: function(response){
       var data = response.data;
 
-      var facetsData = {};
-
       data.facets = data.aggregations;
 
       for (var b in data.facets) {
@@ -44,5 +42,5 @@ function (angular,_) {
 
       return response;
     }
-  }
+  };
 });
