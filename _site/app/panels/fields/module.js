@@ -1,4 +1,4 @@
-/*! kibana - v3.1.3 - 2016-05-10
- * Copyright (c) 2016 Rashid Khan; Licensed Apache License */
+/*! kibana - v3.1.3 - 2016-07-11
+ * Copyright (c) 2016 Rashid Khan; Licensed Apache-2.0 */
 
 define("panels/fields/module",["angular","app","lodash"],function(a,b,c){"use strict";var d=a.module("kibana.panels.fields",[]);b.useModule(d),d.controller("fields",["$scope",function(a){a.panelMeta={status:"Deprecated",description:"You should not use this table, it does not work anymore. The table panel nowintegrates a field selector. This module will soon be removed."};var b={style:{},arrange:"vertical",micropanel_position:"right"};c.defaults(a.panel,b),a.init=function(){}}])});
