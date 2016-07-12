@@ -1,51 +1,52 @@
 define([
-  'angular',
-  'lodash'
-],
-function (angular,_) {
-  var signature = /^\{\"facets\":\{\"0\":\{\"query\":.*\"old_.*/;
+		'angular'
+	],
+	function (angular) {
+		'use strict';
 
-  return {
-    condition: function(config){
-      return /\/_search$/.test(config.url) && signature.test(config.data);
-    },
+		var signature = /^\{\"facets\":\{\"0\":\{\"query\":.*\"old_.*/;
 
-    request: function(config){
-      var facetData = angular.fromJson(config.data);
+		return {
+			condition: function (config) {
+				return (/\/_search$/).test(config.url) && signature.test(config.data);
+			},
 
-      var aggregationsData = {};
-      aggregationsData.aggs = {};
+			request: function (config) {
+				var facetData = angular.fromJson(config.data);
 
-      var fLen = Object.keys(facetData["facets"]).length;
+				var aggregationsData = {};
+				aggregationsData.aggs = {};
 
-      for (i=0; i < fLen/2; i++) {
-        aggregationsData["aggs"][i] = {};
-        aggregationsData["aggs"][i]["filter"] = facetData["facets"][i];
+				var fLen = Object.keys(facetData["facets"]).length;
 
-        aggregationsData["aggs"]["old_" + i] = {};
-        aggregationsData["aggs"]["old_" + i]["filter"] = facetData["facets"]["old_" + i];
-      };
-      config.data = angular.toJson(aggregationsData);
+				for (var i = 0; i < fLen / 2; i++) {
+					aggregationsData["aggs"][i] = {};
+					aggregationsData["aggs"][i]["filter"] = facetData["facets"][i];
 
-      return config;
-    },
+					aggregationsData["aggs"]["old_" + i] = {};
+					aggregationsData["aggs"]["old_" + i]["filter"] = facetData["facets"]["old_" + i];
+				}
+				config.data = angular.toJson(aggregationsData);
 
-    response: function(response){
-      var data = response.data;
+				return config;
+			},
 
-      data.facets = data.aggregations;
+			response: function (response) {
+				var data = response.data;
 
-      var fLen = Object.keys(data["facets"]).length;
+				data.facets = data.aggregations;
 
-      for (i=0; i < fLen/2; i++) {
-        data["facets"][i]["count"] = data["facets"][i]["doc_count"];
-        data["facets"]["old_" + i]["count"] = data["facets"]["old_" + i]["doc_count"];
+				var fLen = Object.keys(data["facets"]).length;
 
-        data["facets"][i]["type"] = "query";
-        data["facets"]["old_" + i]["type"] = "query";
-      };
+				for (var i = 0; i < fLen / 2; i++) {
+					data["facets"][i]["count"] = data["facets"][i]["doc_count"];
+					data["facets"]["old_" + i]["count"] = data["facets"]["old_" + i]["doc_count"];
 
-      return response;
-    }
-  }
-});
+					data["facets"][i]["type"] = "query";
+					data["facets"]["old_" + i]["type"] = "query";
+				}
+
+				return response;
+			}
+		};
+	});

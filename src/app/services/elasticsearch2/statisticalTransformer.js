@@ -1,68 +1,68 @@
 define([
-  'angular',
-  'lodash'
-],
-function (angular,_) {
-  var signature = /^\{\"facets\":\{\"stats\":\{\"statistical\":/;
+		'angular',
+		'lodash'
+	],
+	function (angular, _) {
+		'use strict';
 
-  return {
-    condition: function(config){
-      return /\/_search$/.test(config.url) && signature.test(config.data);
-    },
+		var signature = /^\{\"facets\":\{\"stats\":\{\"statistical\":/;
 
-    request: function(config){
-      var facetData = angular.fromJson(config.data);
+		return {
+			condition: function (config) {
+				return (/\/_search$/).test(config.url) && signature.test(config.data);
+			},
 
-      var aggregationsData = {
-        aggs:{},
-        size: facetData.size
-      };
+			request: function (config) {
+				var facetData = angular.fromJson(config.data);
 
-      _.forOwn(facetData.facets, function(num, key){
-        var facet = facetData.facets[key];
+				var aggregationsData = {
+					aggs: {},
+					size: facetData.size
+				};
 
-        var aggregation = {
-          filter: facet.facet_filter.fquery,
-          aggs: {
-            stats: {
-              extended_stats: {
-                field: facet.statistical.field
-              }
-            }
-          }
-        };
+				_.forOwn(facetData.facets, function (num, key) {
+					var facet = facetData.facets[key];
 
-        aggregationsData.aggs[key] = aggregation
-      });
+					aggregationsData.aggs[key] = {
+						filter: facet.facet_filter.fquery,
+						aggs: {
+							stats: {
+								extended_stats: {
+									field: facet.statistical.field
+								}
+							}
+						}
+					};
+				});
 
-      config.data = angular.toJson(aggregationsData);
+				config.data = angular.toJson(aggregationsData);
 
-      return config;
-    },
+				return config;
+			},
 
-    response: function(response){
-      var data = response.data;
+			response: function (response) {
+				var data = response.data;
 
-      data.facets = {};
+				data.facets = {};
 
-      _.forOwn(data.aggregations, function(num, key){
-        var aggregation = data.aggregations[key];
+				_.forOwn(data.aggregations, function (num, key) {
+					var aggregation = data.aggregations[key];
 
-        data.facets[key] = {
-          _type: 'statistical',
-          total: aggregation.doc_count,
-          count: aggregation.stats.count,
-          min: aggregation.stats.min,
-          max: aggregation.stats.max,
-          mean: aggregation.stats.avg,
-          sum: aggregation.stats.sum,
-          sum_of_squares: aggregation.stats.sum_of_squares,
-          variance: aggregation.stats.variance,
-          std_deviation: aggregation.stats.std_deviation
-        };
-      });
+					data.facets[key] = {
+						_type: 'statistical',
+						total: aggregation.doc_count,
+						count: aggregation.stats.count,
+						min: aggregation.stats.min,
+						max: aggregation.stats.max,
+						mean: aggregation.stats.avg,
+						sum: aggregation.stats.sum,
+						sum_of_squares: aggregation.stats.sum_of_squares,
+						variance: aggregation.stats.variance,
+						std_deviation: aggregation.stats.std_deviation
+					};
+				});
 
-      return response;
-    }
-  }
-});
+				return response;
+			}
+		};
+	});
