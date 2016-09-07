@@ -1,17 +1,18 @@
-define([
-],
-function () {
-  return {
-    condition: function(config){
-      return true;
-    },
+define([],
+	function () {
+		'use strict';
 
-    request: function(config){
-      return config;
-    },
+		return {
+			condition: function () { // config parameter not used
+				return true;
+			},
 
-    response: function(response){
-      return response;
-    }
-  }
-});
+			request: function (config) {
+				return config;
+			},
+
+			response: function (response) {
+				return response;
+			}
+		};
+	});

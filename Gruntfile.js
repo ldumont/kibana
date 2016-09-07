@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
     baseDir: '.',
     srcDir: 'src',
-    destDir: 'dist',
+    destDir: '_site',
     tempDir: 'tmp',
     docsDir: 'docs/',
     unitTests: 'test/unit/specs/**/*.js',

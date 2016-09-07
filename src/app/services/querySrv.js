@@ -18,7 +18,7 @@ function (angular, _, config, kbn) {
     dashboard.current.services.query = dashboard.current.services.query || {};
     _.defaults(dashboard.current.services.query,{
       list : {},
-      ids : [],
+      ids : []
     });
 
     this.colors = [
@@ -160,13 +160,15 @@ function (angular, _, config, kbn) {
       }
     };
 
-    this.make_queries_from_terms = function(data) {
-        _.each(data.terms, function(term) {
-          var q = self.defaults({});
-          q.query = data.field +':'+term;
-          self.set(q);
-        });
-        self.resolve().then(function(){$rootScope.$broadcast('refresh');});
+    this.make_queries_from_terms = function (data) {
+      _.each(data.terms, function (term) {
+        var q = self.defaults({});
+        q.query = data.field + ':' + term;
+        self.set(q);
+      });
+      self.resolve().then(function () {
+        $rootScope.$broadcast('refresh');
+      });
     };
 
     // This is used both for adding queries and modifying them. If an id is passed,
