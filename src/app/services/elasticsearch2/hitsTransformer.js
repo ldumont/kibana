@@ -3,7 +3,7 @@ define([
 ],
 function (angular) {
   'use strict';
-  var signature = /^\{\"facets\":\{\"0\":\{\"query\":\{\"filtered\":\{\"query\"/;
+  var signature = /^\{\"facets\":\{\"[0-9]+\":\{\"query\":\{\"filtered\":\{\"query\"/;
 
   return {
     condition: function(config){
@@ -16,9 +16,9 @@ function (angular) {
       var aggregationsData = {};
       aggregationsData.aggs = {};
 
-      var fLen = Object.keys(facetData["facets"]).length;
+      var facets = facetData["facets"];
 
-      for (var i=0; i < fLen; i++) {
+      for (var i in facets) {
         aggregationsData["aggs"][i] = {};
         aggregationsData["aggs"][i]["filter"] = facetData["facets"][i];
       }
