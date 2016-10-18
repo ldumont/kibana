@@ -1,10 +1,11 @@
+/*jslint maxlen: 145 */
 define([
 		'angular',
 		'lodash'
 	],
 	function (angular, _) {
 		'use strict';
-		var signature = /^\{\"facets\":\{\"0\":\{\"date_histogram\":\{\"key_field\":\".*?\",\"value_field\":\".*?\",\"interval\":\".*?\"\}/;
+		var signature = /^\{\"facets\":\{\"[0-9]+\":\{\"date_histogram\":\{\"key_field\":\".*?\",\"value_field\":\".*?\",\"interval\":\".*?\"\}/;
 
 		return {
 			condition: function (config) {
