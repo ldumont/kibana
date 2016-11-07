@@ -33,9 +33,13 @@ app/services/querySrv.js
 app/services/timer.js
 app/services/panelMove.js
 app/services/esVersion.js
+app/services/elasticsearch2/trendsTransformer.js
+app/services/elasticsearch2/topnTransformer.js
 app/services/elasticsearch2/termsTransformer.js
 app/services/elasticsearch2/statisticalTransformer.js
 app/services/elasticsearch2/dateHistogramTransformer.js
+app/services/elasticsearch2/histogramTransformer.js
+app/services/elasticsearch2/hitsTransformer.js
 app/services/elasticsearch2/passthroughTransformer.js
 app/services/elasticsearch2/interceptor.js
 app/services/all.js

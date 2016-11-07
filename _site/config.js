@@ -30,6 +30,7 @@ define(['settings'],
        *
        */
       elasticsearch: "http://" + window.location.hostname + ":9200",
+      //elasticsearch: "http://10.200.0.6:9200",
 
       /** @scratch /configuration/config.js/5
        *
