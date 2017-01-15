@@ -13,7 +13,30 @@ define([
 
 			request: function (config) {
 				var facetData = angular.fromJson(config.data);
+				var order = facetData.facets.terms.terms.order;
+				var sortTerm, sortOrder;
 
+				switch (order){
+				case "count":
+					sortTerm = "_count";
+					sortOrder = "desc";
+					break;
+				case "reverse_count":
+					sortTerm = "_count";
+					sortOrder = "asc";
+					break;
+				case "term":
+					sortTerm = "_term";
+					sortOrder = "asc";
+					break;
+				case "reverse_term":
+					sortTerm = "_term";
+					sortOrder = "desc";
+					break;
+				}
+				var orderData = {};
+				orderData[sortTerm] = sortOrder;
+				
 				var aggregationsData = {
 					aggs: {
 						fquery: {
@@ -23,7 +46,8 @@ define([
 									terms: {
 										field: facetData.facets.terms.terms.field,
 										size: facetData.facets.terms.terms.size,
-										min_doc_count: 1
+										min_doc_count: 1,
+										order: orderData
 									}
 								},
 								terms_missing: {
