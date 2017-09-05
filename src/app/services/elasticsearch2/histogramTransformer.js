@@ -41,7 +41,6 @@ define([
 				});
 
 				config.data = angular.toJson(aggregationsData);
-
 				return config;
 			},
 
@@ -62,7 +61,8 @@ define([
 								total_count: bucket.doc_count,
 								max: bucket[1]["max"],
 								mean: bucket[1]["avg"],
-								min: bucket[1]["min"]
+								min: bucket[1]["min"],
+								total: bucket[1]["sum"]
 							};
 						})
 					};
