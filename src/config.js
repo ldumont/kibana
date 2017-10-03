@@ -29,7 +29,7 @@ define(['settings'],
        *  +elasticsearch: {server: "http://localhost:9200", withCredentials: true}+
        *
        */
-      elasticsearch: "http://" + window.location.hostname + ":9200",
+      elasticsearch: "http://10.201.128.208:9200",
       //elasticsearch: "http://10.200.0.6:9200",
 
       /** @scratch /configuration/config.js/5
@@ -63,7 +63,7 @@ define(['settings'],
        * The default ES index to use for storing Kibana specific object
        * such as stored dashboards
        */
-      kibana_index: "kibana-int",
+      kibana_index: "kibana",
 
       /** @scratch /configuration/config.js/5
        *
