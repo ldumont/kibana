@@ -29,7 +29,9 @@ define(['settings'],
        *  +elasticsearch: {server: "http://localhost:9200", withCredentials: true}+
        *
        */
-      elasticsearch: "http://10.201.128.208:9200",
+      // elasticsearch: "http://10.201.128.208:9200",
+      elasticsearch: "http://" + window.location.hostname + ":9200",
+
       //elasticsearch: "http://10.200.0.6:9200",
 
       /** @scratch /configuration/config.js/5
@@ -38,11 +40,12 @@ define(['settings'],
        *
        * This specify the version of elastic search to work with:
        *   1 - For working with elastic search 1.x - makes use of facets
-       *   2 - (default) For working with elastic search 2.x - makes use of aggregations
+       *   2 - For working with elastic search 2.x - makes use of aggregations
+       *   5 - (default) Adds some logic to support ES5
        *
        * elasticsearch_version: 2,
        */
-      elasticsearch_version: 2,
+      elasticsearch_version: 5,
 
       /** @scratch /configuration/config.js/5
        *
@@ -63,6 +66,7 @@ define(['settings'],
        * The default ES index to use for storing Kibana specific object
        * such as stored dashboards
        */
+      // kibana_index: "kibana-ind",
       kibana_index: "kibana",
 
       /** @scratch /configuration/config.js/5
