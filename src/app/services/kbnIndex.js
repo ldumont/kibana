@@ -37,6 +37,9 @@ function (angular, _, config, moment) {
       var something;
       indices = _.uniq(_.map(indices,  encodeURIComponent));
 
+      // Previously there was `ignore_missing=true` query param
+      // Looks like it did nothing
+      // Also it is deprecated and not supported by ES5, thus removed
       something = ejs.client.get("/" + indices.join(",") + "/_aliases?ignore_unavailable=true",
         undefined, undefined, function (data, p) {
           if (p === 404) {
