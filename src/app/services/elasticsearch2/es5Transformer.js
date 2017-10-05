@@ -9,6 +9,8 @@ define([],
                 }
                 var data = angular.fromJson(config.data);
                 var changed = false;
+                // TODO: this is only for debug, remove:
+                var originalUrl = config.url;
 
                 // Replace `search_type=count` which is deprecated in ES5
                 if (config.url.indexOf('search_type=count') !== -1) {
@@ -33,25 +35,80 @@ define([],
                     }
                 }
 
-                // Find and replace (if any) filtered queries with with bool queries
-                if (data.query && data.query.filtered && data.query.filtered.query) {
-                    changed = true;
-                    data.query.filtered.must = data.query.filtered.query;
-                    delete data.query.filtered.query;
-                    data.query.bool = data.query.filtered;
-                    delete data.query.filtered;
-                }
-
-
-
-
-
-
+                changed = replaceFiltered(data) || changed;
+                changed = replaceFquery(data) || changed;
+                changed = replaceQueryUnderFilter(data) || changed;
 
                 if (changed) {
+                    // TODO: remove logs after ES5 support implementation is finished
+                    // console.log('');
+                    // console.log('*************************************');
+                    // console.log('ES5 transformer processed request:');
+                    // console.log(config.method + ' ' + originalUrl);
+                    // console.log('Transformed URL: ' + config.url);
+                    // console.log('Original payload:');
+                    // console.log(config.data);
+                    // console.log('Transformed payload:');
+                    // console.log(angular.toJson(data));
+                    // console.log('*************************************');
+                    // console.log('');
+
                     config.data = angular.toJson(data);
                 }
 				return config;
 			}
-		};
+        };
+
+        function replaceFiltered(obj) {
+            var changed = false;
+
+            Object.getOwnPropertyNames(obj).forEach(
+                function (propertyName) {
+                    if (propertyName === 'filtered' && obj.filtered && obj.filtered.query) {
+                        changed = true;
+                        obj.filtered.must = obj.filtered.query;
+                        delete obj.filtered.query;
+                        obj.bool = obj.filtered;
+                        delete obj.filtered;
+                    } else if (angular.isObject(obj[propertyName]) || angular.isArray(obj[propertyName])) {
+                        changed = replaceFiltered(obj[propertyName]) || changed;
+                    }
+                }
+            );
+            return changed;
+        }
+
+        function replaceFquery(obj) {
+            var changed = false;
+
+            Object.getOwnPropertyNames(obj).forEach(
+                function (propertyName) {
+                    if (propertyName === 'fquery' && obj.fquery && obj.fquery.query && obj.fquery.query.query_string) {
+                        changed = true;
+                        obj.query_string = obj.fquery.query.query_string;
+                        delete obj.fquery;
+                    } else if (angular.isObject(obj[propertyName]) || angular.isArray(obj[propertyName])) {
+                        changed = replaceFquery(obj[propertyName]) || changed;
+                    }
+                }
+            );
+            return changed;
+        }
+
+        function replaceQueryUnderFilter(obj) {
+            var changed = false;
+
+            Object.getOwnPropertyNames(obj).forEach(
+                function (propertyName) {
+                    if (propertyName === 'filter' && obj.filter && obj.filter.query) {
+                        changed = true;
+                        obj.filter = obj.filter.query;
+                        delete obj.query;
+                    } else if (angular.isObject(obj[propertyName]) || angular.isArray(obj[propertyName])) {
+                        changed = replaceQueryUnderFilter(obj[propertyName]) || changed;
+                    }
+                }
+            );
+            return changed;
+        }
 	});

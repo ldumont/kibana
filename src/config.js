@@ -66,7 +66,6 @@ define(['settings'],
        * The default ES index to use for storing Kibana specific object
        * such as stored dashboards
        */
-      // TODO: revert tmp value:
       kibana_index: "kibana",
       // kibana_index: "kibana-int",
 
