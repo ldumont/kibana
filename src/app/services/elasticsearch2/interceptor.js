@@ -9,11 +9,12 @@ define([
 		'./dateHistogramTransformer',
 		'./histogramTransformer',
 		'./hitsTransformer',
-		'./passthroughTransformer'
+		'./passthroughTransformer',
+		'./es5Transformer'
 	],
 	function (angular, config, _, trendsTransformer, topnTransformer, termsTransformer,
             statisticalTransformer, dateHistogramTransformer, histogramTransformer,
-            hitsTransformer, passthroughTransformer) {
+            hitsTransformer, passthroughTransformer, es5Transformer) {
 		'use strict';
 
 		var transformers = [
@@ -30,9 +31,12 @@ define([
 		var module = angular.module('kibana.services');
 
 		module.config(function ($httpProvider) {
-			var requestedVersion = config.elasticsearch_version || 2;
+			var requestedVersion = config.elasticsearch_version || 5;
 
-			if (angular.isNumber(requestedVersion) && requestedVersion === 2) {
+			if (!angular.isNumber(requestedVersion)) {
+				return;
+			}
+			if (requestedVersion === 2 || requestedVersion === 5) {
 				$httpProvider.interceptors.push(function () { // $log unused
 					return {
 						'request': function (config) {
@@ -45,6 +49,15 @@ define([
 
 						'response': function (response) {
 							return response.config.es2Transformer.response(response);
+						}
+					};
+				});
+			}
+			if (requestedVersion === 5) {
+				$httpProvider.interceptors.push(function () {
+					return {
+						'request': function (config) {
+							return es5Transformer.request(config);
 						}
 					};
 				});

@@ -177,9 +177,9 @@ define([
           .from(filter.from)
           .to(filter.to);
       case 'querystring':
-        return ejs.QueryFilter(ejs.QueryStringQuery(filter.query)).cache(true);
+        return ejs.QueryFilter(ejs.QueryStringQuery(filter.query).analyzeWildcard(true).lowercaseExpandedTerms(false));
       case 'field':
-        return ejs.QueryFilter(ejs.QueryStringQuery(filter.field+":("+filter.query+")")).cache(true);
+        return ejs.QueryFilter(ejs.QueryStringQuery(filter.field+":("+filter.query+")").analyzeWildcard(true).lowercaseExpandedTerms(false)).cache(true);
       case 'terms':
         return ejs.TermsFilter(filter.field,filter.value);
       case 'exists':

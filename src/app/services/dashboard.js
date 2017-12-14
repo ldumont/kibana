@@ -371,8 +371,11 @@ function (angular, $, kbn, _, config, moment, Modernizr) {
         return false;
       };
 
+      // Previously threre was unix timestamp value query param at the end
+      // Looks like it is not needed at all
+      // ES5 claims on unsupported prams, thus removed it
       ejs.client.get(
-        "/" + config.kibana_index + "/"+type+"/"+id+'?' + new Date().getTime(),
+        "/" + config.kibana_index + "/"+type+"/" + id,
         null, successcb, errorcb);
 
     };
