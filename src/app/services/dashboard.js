@@ -374,9 +374,18 @@ function (angular, $, kbn, _, config, moment, Modernizr) {
       // Previously threre was unix timestamp value query param at the end
       // Looks like it is not needed at all
       // ES5 claims on unsupported prams, thus removed it
-      ejs.client.get(
-        "/" + config.kibana_index + "/"+type+"/" + id,
-        null, successcb, errorcb);
+      switch(type){
+        case('dashboard'):
+          ejs.client.get(
+            "/" + config.kibana_index + "/"+type+"/" + id,
+            null, successcb, errorcb);
+          break;
+        case('temp'):
+          ejs.client.get(
+            "/" + config.kibana_temp_index + "/"+type+"/" + id,
+            null, successcb, errorcb);
+          break;
+      }
 
     };
 
@@ -414,7 +423,7 @@ function (angular, $, kbn, _, config, moment, Modernizr) {
       }
 
       // Create request with id as title. Rethink this.
-      var request = ejs.Document(config.kibana_index,type,id).source({
+     var request = ejs.Document(type === 'temp' ? config.kibana_temp_index : config.kibana_index,type,id).source({
         user: 'guest',
         group: 'guest',
         title: save.title,

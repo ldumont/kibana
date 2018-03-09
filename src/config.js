@@ -67,6 +67,7 @@ define(['settings'],
        * such as stored dashboards
        */
       kibana_index: "kibana",
+      kibana_temp_index: "kibana-temp",
       // kibana_index: "kibana-int",
 
       /** @scratch /configuration/config.js/5

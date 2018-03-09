@@ -13,6 +13,7 @@ function (_) {
       elasticsearch     : "http://"+window.location.hostname+":9200",
       panel_names       : [],
       kibana_index      : 'kibana-int',
+      kibana_temp_index : 'kibana-int-temp',
       default_route     : '/dashboard/file/default.json'
     };
 
