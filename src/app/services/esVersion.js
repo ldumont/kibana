@@ -10,7 +10,9 @@ function (angular, _, config) {
 
   module.service('esVersion', function($http, alertSrv, esMinVersion, $q, ejsResource) {
 
-    this.versions = [];
+	// Eran - setting a hardcoded version will prevent the slow and redundant _nodes request from going out
+	// this data isn't used anyway.
+    this.versions = ['6.0.0'];
 
     var ejs = ejsResource(config.elasticsearch);
 
