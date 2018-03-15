@@ -77,9 +77,6 @@ define([
 				}
 				);
 
-			return something.then(function (p)
-			{
-
 				var indices = [];
 				_.each(p, function (v, k)
 				{
